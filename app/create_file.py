@@ -1,54 +1,20 @@
-import datetime
+from datetime import datetime
 import os
 import sys
 
 input_data = sys.argv
 
-if "-d" in input_data and "-f" not in input_data:
-    d_index = input_data.index("-d")
-    os.makedirs(os.path.join(*input_data[d_index + 1:]))
 
-if "-f" in input_data and "-d" not in input_data:
-    f_index = input_data.index("-f")
-    if os.path.isfile(input_data[f_index + 1]):
-        work_file = open(input_data[f_index + 1], "a")
-        work_file.write("\n")
-    else:
-        work_file = open(input_data[f_index + 1], "w")
-    current_date = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+def write_in_file(file_path: str) -> None:
+    current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     count = 1
 
-    work_file.write(current_date)
-    work_file.write("\n")
-
-    while True:
-
-        input_text = input("Enter content line: ")
-        if input_text == "stop":
-            work_file.close()
-            break
-
-        work_file.write(f"{count} {input_text}\n")
-        count += 1
-
-if "-d" in input_data and "-f" in input_data:
-    f_index = input_data.index("-f")
-    d_index = input_data.index("-d")
-    if f_index > d_index:
-        os.makedirs(os.path.join(*input_data[2:f_index]))
-        dir_path = os.path.join(*input_data[2:f_index])
-        file_path = os.path.join(dir_path, input_data[f_index + 1])
-    else:
-        os.makedirs(os.path.join(*input_data[d_index + 1:]))
-        dir_path = os.path.join(*input_data[d_index + 1:])
-        file_path = os.path.join(dir_path, input_data[f_index + 1])
-
-    current_date = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-    count = 1
+    file_exists = os.path.isfile(file_path)
 
     with open(file_path, "a") as work_file:
-        work_file.write(current_date)
-        work_file.write("\n")
+        if file_exists:
+            work_file.write("\n")
+        work_file.write(current_date + "\n")
         while True:
 
             input_text = input("Enter content line: ")
@@ -57,3 +23,25 @@ if "-d" in input_data and "-f" in input_data:
 
             work_file.write(f"{count} {input_text}\n")
             count += 1
+
+
+if "-d" in input_data:
+    d_index = input_data.index("-d")
+    if "-f" not in input_data:
+        os.makedirs(os.path.join(*input_data[d_index + 1:]), exist_ok=True)
+    else:
+        f_index = input_data.index("-f")
+        if f_index > d_index:
+            dir_path = os.path.join(*input_data[d_index + 1:f_index])
+        else:
+            dir_path = os.path.join(*input_data[d_index + 1:])
+
+        os.makedirs(dir_path, exist_ok=True)
+
+        file_path = os.path.join(dir_path, input_data[f_index + 1])
+
+        write_in_file(file_path)
+else:
+    f_index = input_data.index("-f")
+    file_path = input_data[f_index + 1]
+    write_in_file(file_path)
