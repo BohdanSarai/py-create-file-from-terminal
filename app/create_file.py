@@ -7,7 +7,7 @@ input_data = sys.argv
 
 def write_in_file(file_path: str) -> None:
     current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    count = 1
+    line_number = 1
 
     file_exists = os.path.isfile(file_path)
 
@@ -21,8 +21,8 @@ def write_in_file(file_path: str) -> None:
             if input_text == "stop":
                 break
 
-            work_file.write(f"{count} {input_text}\n")
-            count += 1
+            work_file.write(f"{line_number} {input_text}\n")
+            line_number += 1
 
 
 if "-d" in input_data:
